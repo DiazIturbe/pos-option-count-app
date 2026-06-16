@@ -1,6 +1,11 @@
 import os
+from pathlib import Path
+
+import requests
 import streamlit as st
+
 from report_generator import generate_report
+
 
 st.set_page_config(
     page_title="POS Option Count Report Generator",
@@ -8,6 +13,45 @@ st.set_page_config(
 )
 
 DEFAULT_JESTA_PATH = "data/default_jesta_mapping.csv"
+GOOGLE_DRIVE_FILE_ID = "1xtsJW8H_Q-kRL8Sqb5raUFG2m9ByYU14"
+
+
+@st.cache_data(show_spinner=False)
+def download_jesta_mapping_from_drive():
+    url = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_FILE_ID}"
+
+    data_dir = Path("data")
+    data_dir.mkdir(exist_ok=True)
+
+    output_path = data_dir / "default_jesta_mapping.csv"
+
+    response = requests.get(url, timeout=300)
+
+    if response.status_code != 200:
+        raise RuntimeError(
+            f"Could not download Jesta Mapping file from Google Drive. "
+            f"Status code: {response.status_code}"
+        )
+
+    content_start = response.content[:500].lower()
+
+    if b"<html" in content_start or b"<!doctype html" in content_start:
+        raise RuntimeError(
+            "Google Drive returned a web page instead of the CSV file. "
+            "Please confirm the file is shared as 'Anyone with the link - Viewer'."
+        )
+
+    output_path.write_bytes(response.content)
+
+    return str(output_path)
+
+
+def get_default_jesta_file():
+    if os.path.exists(DEFAULT_JESTA_PATH):
+        return DEFAULT_JESTA_PATH
+
+    return download_jesta_mapping_from_drive()
+
 
 st.title("POS Option Count Report Generator")
 
@@ -18,7 +62,7 @@ with st.expander("How to use this app", expanded=True):
     **Normal workflow:**
     1. Upload the **POS Option Count** file.
     2. Upload the **Floor Scan File**.
-    3. The app will use the default Jesta Mapping file already saved in the app.
+    3. The app will use the default Jesta Mapping file automatically.
 
     **Only upload a Jesta Mapping file if Head Office has provided a new barcode mapping file.**
     """)
@@ -48,15 +92,19 @@ if use_custom_jesta:
         key="jesta_file"
     )
 else:
-    jesta_file = DEFAULT_JESTA_PATH
-    if os.path.exists(DEFAULT_JESTA_PATH):
-        st.info("Using default Jesta Mapping file saved in the app.")
-    else:
+    try:
+        with st.spinner("Loading default Jesta Mapping file..."):
+            jesta_file = get_default_jesta_file()
+
+        st.info("Using default Jesta Mapping file.")
+
+    except Exception as e:
+        jesta_file = None
         st.error(
-            "Default Jesta Mapping file was not found. "
-            "Please create a folder named 'data' and place the file inside it as "
-            "'default_jesta_mapping.csv'."
+            "Default Jesta Mapping file could not be loaded. "
+            "Please upload a replacement Jesta Mapping file."
         )
+        st.exception(e)
 
 st.markdown("### 3. Floor Scan File")
 scan_file = st.file_uploader(
@@ -69,13 +117,16 @@ if st.button("Generate Report"):
 
     if not pos_file or not scan_file:
         st.error("Please upload the POS Option Count file and the Floor Scan file.")
+
     elif use_custom_jesta and not jesta_file:
         st.error("Please upload the replacement Jesta Mapping file.")
-    elif not use_custom_jesta and not os.path.exists(DEFAULT_JESTA_PATH):
+
+    elif not use_custom_jesta and not jesta_file:
         st.error(
-            "The default Jesta Mapping file is missing. "
-            "Add it to data/default_jesta_mapping.csv or upload a replacement file."
+            "The default Jesta Mapping file is missing or could not be downloaded. "
+            "Upload a replacement file or check the Google Drive sharing settings."
         )
+
     else:
         try:
             with st.spinner("Generating report..."):
