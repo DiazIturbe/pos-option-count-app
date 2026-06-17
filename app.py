@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import gdown
 import requests
 import streamlit as st
 
@@ -15,36 +16,32 @@ st.set_page_config(
 DEFAULT_JESTA_PATH = "data/default_jesta_mapping.csv"
 GOOGLE_DRIVE_FILE_ID = "1xtsJW8H_Q-kRL8Sqb5raUFG2m9ByYU14"
 
-
 @st.cache_data(show_spinner=False)
 def download_jesta_mapping_from_drive():
-    url = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_FILE_ID}"
-
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
 
     output_path = data_dir / "default_jesta_mapping.csv"
 
-    response = requests.get(url, timeout=300)
+    file_id = "1xtsJW8H_Q-kRL8Sqb5raUFG2m9ByYU14"
+    url = f"https://drive.google.com/uc?id={file_id}"
 
-    if response.status_code != 200:
+    gdown.download(
+        url=url,
+        output=str(output_path),
+        quiet=False,
+        fuzzy=True
+    )
+
+    if not output_path.exists():
+        raise RuntimeError("Jesta Mapping file was not downloaded.")
+
+    if output_path.stat().st_size < 1000:
         raise RuntimeError(
-            f"Could not download Jesta Mapping file from Google Drive. "
-            f"Status code: {response.status_code}"
+            "Downloaded file is too small. Google Drive may have returned an error page."
         )
-
-    content_start = response.content[:500].lower()
-
-    if b"<html" in content_start or b"<!doctype html" in content_start:
-        raise RuntimeError(
-            "Google Drive returned a web page instead of the CSV file. "
-            "Please confirm the file is shared as 'Anyone with the link - Viewer'."
-        )
-
-    output_path.write_bytes(response.content)
 
     return str(output_path)
-
 
 def get_default_jesta_file():
     if os.path.exists(DEFAULT_JESTA_PATH):
