@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import gdown
-import requests
 import streamlit as st
 
 from report_generator import generate_report
@@ -16,6 +15,7 @@ st.set_page_config(
 DEFAULT_JESTA_PATH = "data/default_jesta_mapping.csv"
 GOOGLE_DRIVE_FILE_ID = "1xtsJW8H_Q-kRL8Sqb5raUFG2m9ByYU14"
 
+
 @st.cache_data(show_spinner=False)
 def download_jesta_mapping_from_drive():
     data_dir = Path("data")
@@ -23,14 +23,12 @@ def download_jesta_mapping_from_drive():
 
     output_path = data_dir / "default_jesta_mapping.csv"
 
-    file_id = "1xtsJW8H_Q-kRL8Sqb5raUFG2m9ByYU14"
-    url = f"https://drive.google.com/uc?id={file_id}"
+    url = f"https://drive.google.com/uc?id={GOOGLE_DRIVE_FILE_ID}"
 
     gdown.download(
         url=url,
         output=str(output_path),
-        quiet=False,
-        fuzzy=True
+        quiet=False
     )
 
     if not output_path.exists():
@@ -42,6 +40,7 @@ def download_jesta_mapping_from_drive():
         )
 
     return str(output_path)
+
 
 def get_default_jesta_file():
     if os.path.exists(DEFAULT_JESTA_PATH):
