@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from io import BytesIO
 
 import gdown
 import pandas as pd
@@ -25,7 +26,6 @@ st.markdown("""
     padding-bottom: 2rem;
     max-width: 1250px;
 }
-
 .hero-card {
     background: linear-gradient(135deg, #111827 0%, #374151 100%);
     padding: 2rem;
@@ -33,20 +33,17 @@ st.markdown("""
     margin-bottom: 1.5rem;
     color: white;
 }
-
 .hero-card h1 {
     color: white;
     margin-bottom: 0.35rem;
     font-size: 2.4rem;
     font-weight: 800;
 }
-
 .hero-card p {
     color: #E5E7EB;
     font-size: 1.05rem;
     margin-bottom: 0;
 }
-
 .creator-pill {
     display: inline-block;
     margin-top: 1rem;
@@ -56,7 +53,6 @@ st.markdown("""
     color: #E5E7EB;
     font-size: 0.9rem;
 }
-
 .preview-card {
     background: white;
     border: 1px solid #E5E7EB;
@@ -65,14 +61,12 @@ st.markdown("""
     margin-bottom: 1rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
-
 [data-testid="stFileUploader"] {
     background-color: #FFFFFF;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 0.75rem;
 }
-
 .stButton > button {
     width: 100%;
     border-radius: 12px;
@@ -92,11 +86,7 @@ def download_jesta_mapping_from_drive():
     output_path = data_dir / "default_jesta_mapping.csv"
     url = f"https://drive.google.com/uc?id={GOOGLE_DRIVE_FILE_ID}"
 
-    gdown.download(
-        url=url,
-        output=str(output_path),
-        quiet=False
-    )
+    gdown.download(url=url, output=str(output_path), quiet=False)
 
     if not output_path.exists():
         raise RuntimeError("Jesta Mapping file was not downloaded.")
@@ -114,6 +104,35 @@ def get_default_jesta_file():
         return DEFAULT_JESTA_PATH
 
     return download_jesta_mapping_from_drive()
+
+
+def build_scan_excel_from_text(barcode_text):
+    raw_lines = [
+        line.strip()
+        for line in barcode_text.splitlines()
+        if line.strip()
+    ]
+
+    valid_barcodes = []
+    invalid_lines = []
+
+    for line in raw_lines:
+        cleaned = line.strip().replace(" ", "")
+
+        if cleaned.isdigit() and len(cleaned) in [8, 12, 13, 14]:
+            valid_barcodes.append(cleaned)
+        else:
+            invalid_lines.append(line)
+
+    scan_df = pd.DataFrame(valid_barcodes, columns=["scanned_barcode"])
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        scan_df.to_excel(writer, index=False, header=False)
+
+    output.seek(0)
+
+    return output, valid_barcodes, invalid_lines
 
 
 st.markdown("""
@@ -135,14 +154,18 @@ tab_generate, tab_preview, tab_about = st.tabs([
 with tab_generate:
     with st.expander("How to use this app", expanded=True):
         st.markdown("""
-        **Normal workflow**
+        **Workflow**
 
         1. Upload the **POS Option Count** file.
-        2. Upload the **Floor Scan File**. The scan file does **not** need a header; the app automatically treats the first column as scanned barcodes.
+        2. Choose how to provide the floor scan:
+           - Upload an Excel scan file, or
+           - Paste the barcode list from Notes.
         3. The app automatically uses the default Jesta Mapping file.
-        4. Click **Generate Report** and download the Excel file.
+        4. Click **Generate Report** and download the Excel report.
 
-        **Only upload a different Jesta Mapping file if Head Office has provided a new barcode mapping file.**
+        **Phone workflow**
+
+        Scan into Apple Notes, copy the full list, then paste it into the app.
         """)
 
     meta_col1, meta_col2 = st.columns(2)
@@ -155,23 +178,51 @@ with tab_generate:
 
     st.markdown("### Required uploads")
 
-    upload_col1, upload_col2 = st.columns(2)
+    st.markdown("#### 1. POS Option Count File")
+    pos_file = st.file_uploader(
+        "Upload POS Option Count file",
+        type=["xlsx"],
+        key="pos_file"
+    )
 
-    with upload_col1:
-        st.markdown("#### 1. POS Option Count File")
-        pos_file = st.file_uploader(
-            "Upload POS Option Count file",
-            type=["xlsx"],
-            key="pos_file"
-        )
+    st.markdown("#### 2. Floor Scan Input")
 
-    with upload_col2:
-        st.markdown("#### 2. Floor Scan File")
+    scan_input_method = st.radio(
+        "Choose scan input method",
+        ["Paste barcode list from Notes", "Upload Excel scan file"],
+        horizontal=True
+    )
+
+    scan_file = None
+    pasted_valid_barcodes = []
+    pasted_invalid_lines = []
+
+    if scan_input_method == "Upload Excel scan file":
         scan_file = st.file_uploader(
             "Upload Floor Scan File",
             type=["xlsx"],
             key="scan_file"
         )
+
+    else:
+        barcode_text = st.text_area(
+            "Paste barcode list here",
+            height=300,
+            placeholder="Scan or paste barcodes here, one per line..."
+        )
+
+        if barcode_text.strip():
+            scan_file, pasted_valid_barcodes, pasted_invalid_lines = build_scan_excel_from_text(barcode_text)
+
+            st.success(f"{len(pasted_valid_barcodes)} valid barcode(s) detected.")
+
+            if pasted_invalid_lines:
+                st.warning(
+                    f"{len(pasted_invalid_lines)} line(s) were ignored because they were not valid barcode numbers."
+                )
+
+                with st.expander("Show ignored lines"):
+                    st.write(pasted_invalid_lines)
 
     st.markdown("### Jesta Mapping")
 
@@ -205,8 +256,11 @@ with tab_generate:
 
     if st.button("Generate Report"):
 
-        if not pos_file or not scan_file:
-            st.error("Please upload the POS Option Count file and the Floor Scan file.")
+        if not pos_file:
+            st.error("Please upload the POS Option Count file.")
+
+        elif not scan_file:
+            st.error("Please provide the Floor Scan input using Excel upload or pasted barcode list.")
 
         elif use_custom_jesta and not jesta_file:
             st.error("Please upload the replacement Jesta Mapping file.")
@@ -337,9 +391,7 @@ with tab_preview:
         "missing_count": [14, 9, 5, 3]
     })
 
-    st.bar_chart(
-        sample_missing_dept.set_index("department")
-    )
+    st.bar_chart(sample_missing_dept.set_index("department"))
 
     st.markdown("### What the Excel report includes")
 
