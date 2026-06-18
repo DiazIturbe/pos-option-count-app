@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from io import BytesIO
+from datetime import date
 
 import gdown
 import pandas as pd
@@ -26,6 +27,7 @@ st.markdown("""
     padding-bottom: 2rem;
     max-width: 1250px;
 }
+
 .hero-card {
     background: linear-gradient(135deg, #111827 0%, #374151 100%);
     padding: 2rem;
@@ -33,17 +35,20 @@ st.markdown("""
     margin-bottom: 1.5rem;
     color: white;
 }
+
 .hero-card h1 {
     color: white;
     margin-bottom: 0.35rem;
     font-size: 2.4rem;
     font-weight: 800;
 }
+
 .hero-card p {
     color: #E5E7EB;
     font-size: 1.05rem;
     margin-bottom: 0;
 }
+
 .creator-pill {
     display: inline-block;
     margin-top: 1rem;
@@ -53,6 +58,7 @@ st.markdown("""
     color: #E5E7EB;
     font-size: 0.9rem;
 }
+
 .preview-card {
     background: white;
     border: 1px solid #E5E7EB;
@@ -61,18 +67,29 @@ st.markdown("""
     margin-bottom: 1rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
+
 [data-testid="stFileUploader"] {
     background-color: #FFFFFF;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 0.75rem;
 }
+
 .stButton > button {
     width: 100%;
     border-radius: 12px;
-    height: 3.1rem;
-    font-weight: 800;
+    height: 3.2rem;
+    font-weight: 900;
     border: 0;
+    background: linear-gradient(135deg, #111827 0%, #2563EB 100%);
+    color: white;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+}
+
+.stButton > button:hover {
+    background: linear-gradient(135deg, #1F2937 0%, #1D4ED8 100%);
+    color: white;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -86,7 +103,11 @@ def download_jesta_mapping_from_drive():
     output_path = data_dir / "default_jesta_mapping.csv"
     url = f"https://drive.google.com/uc?id={GOOGLE_DRIVE_FILE_ID}"
 
-    gdown.download(url=url, output=str(output_path), quiet=False)
+    gdown.download(
+        url=url,
+        output=str(output_path),
+        quiet=False
+    )
 
     if not output_path.exists():
         raise RuntimeError("Jesta Mapping file was not downloaded.")
@@ -152,7 +173,7 @@ tab_generate, tab_preview, tab_about = st.tabs([
 
 
 with tab_generate:
-    with st.expander("How to use this app", expanded=True):
+    with st.expander("How to use this app", expanded=False):
         st.markdown("""
         **Workflow**
 
@@ -171,10 +192,19 @@ with tab_generate:
     meta_col1, meta_col2 = st.columns(2)
 
     with meta_col1:
-        store_name = st.text_input("Store name", value="Richmond")
+        store_name = st.text_input(
+            "Store name",
+            value="",
+            placeholder="Enter store name"
+        )
 
     with meta_col2:
-        report_week = st.text_input("Report week / date", value="Week XX")
+        report_date = st.date_input(
+            "Report date",
+            value=date.today()
+        )
+
+    report_week = report_date.strftime("%Y-%m-%d")
 
     st.markdown("### Required uploads")
 
@@ -214,7 +244,10 @@ with tab_generate:
         if barcode_text.strip():
             scan_file, pasted_valid_barcodes, pasted_invalid_lines = build_scan_excel_from_text(barcode_text)
 
-            st.success(f"{len(pasted_valid_barcodes)} valid barcode(s) detected.")
+            metric_cols = st.columns(3)
+            metric_cols[0].metric("Valid Scans", len(pasted_valid_barcodes))
+            metric_cols[1].metric("Unique Scans", len(set(pasted_valid_barcodes)))
+            metric_cols[2].metric("Duplicates", len(pasted_valid_barcodes) - len(set(pasted_valid_barcodes)))
 
             if pasted_invalid_lines:
                 st.warning(
@@ -256,7 +289,10 @@ with tab_generate:
 
     if st.button("Generate Report"):
 
-        if not pos_file:
+        if not store_name.strip():
+            st.error("Please enter the store name.")
+
+        elif not pos_file:
             st.error("Please upload the POS Option Count file.")
 
         elif not scan_file:
