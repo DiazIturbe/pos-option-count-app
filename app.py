@@ -1,4 +1,5 @@
 import os
+import base64
 from pathlib import Path
 from io import BytesIO
 from datetime import date
@@ -11,71 +12,118 @@ from report_generator import generate_report
 
 
 st.set_page_config(
-    page_title="POS Option Count Report Generator",
-    page_icon="📦",
+    page_title="Floor Inventory Validation Platform",
+    page_icon="▌▌✓",
     layout="wide"
 )
 
 DEFAULT_JESTA_PATH = "data/default_jesta_mapping.csv"
 GOOGLE_DRIVE_FILE_ID = "1xtsJW8H_Q-kRL8Sqb5raUFG2m9ByYU14"
+HERO_IMAGE_PATH = "assets/hero_image.jpg"
 
 
-st.markdown("""
+def get_hero_background_css():
+    if os.path.exists(HERO_IMAGE_PATH):
+        with open(HERO_IMAGE_PATH, "rb") as img_file:
+            encoded = base64.b64encode(img_file.read()).decode()
+        return f"""
+        background:
+            linear-gradient(135deg, rgba(17,24,39,0.88), rgba(37,99,235,0.58)),
+            url("data:image/jpg;base64,{encoded}");
+        background-size: cover;
+        background-position: center;
+        """
+    return """
+    background: linear-gradient(135deg, #111827 0%, #2563EB 100%);
+    """
+
+
+hero_background = get_hero_background_css()
+
+
+st.markdown(f"""
 <style>
-.block-container {
+.block-container {{
     padding-top: 2rem;
     padding-bottom: 2rem;
     max-width: 1250px;
-}
+}}
 
-.hero-card {
-    background: linear-gradient(135deg, #111827 0%, #374151 100%);
-    padding: 2rem;
-    border-radius: 22px;
+.hero-card {{
+    {hero_background}
+    padding: 2.4rem;
+    border-radius: 24px;
     margin-bottom: 1.5rem;
     color: white;
-}
+    box-shadow: 0 12px 30px rgba(17, 24, 39, 0.24);
+}}
 
-.hero-card h1 {
+.brand-label {{
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #DBEAFE;
+    font-weight: 800;
+    margin-bottom: 0.7rem;
+}}
+
+.barcode-icon {{
+    display: inline-block;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 0.12rem;
+    margin-bottom: 0.7rem;
+    color: white;
+}}
+
+.hero-card h1 {{
     color: white;
     margin-bottom: 0.35rem;
-    font-size: 2.4rem;
-    font-weight: 800;
-}
+    font-size: 2.55rem;
+    font-weight: 900;
+}}
 
-.hero-card p {
+.hero-card p {{
     color: #E5E7EB;
-    font-size: 1.05rem;
+    font-size: 1.08rem;
     margin-bottom: 0;
-}
+    max-width: 760px;
+}}
 
-.creator-pill {
+.creator-pill {{
     display: inline-block;
-    margin-top: 1rem;
-    padding: 0.35rem 0.75rem;
-    border: 1px solid #9CA3AF;
+    margin-top: 1.1rem;
+    padding: 0.42rem 0.85rem;
+    border: 1px solid rgba(229, 231, 235, 0.65);
     border-radius: 999px;
-    color: #E5E7EB;
-    font-size: 0.9rem;
-}
+    color: #F9FAFB;
+    font-size: 0.92rem;
+    background: rgba(17, 24, 39, 0.28);
+}}
 
-.preview-card {
+.version-line {{
+    margin-top: 0.75rem;
+    color: #D1D5DB;
+    font-size: 0.85rem;
+}}
+
+.preview-card {{
     background: white;
     border: 1px solid #E5E7EB;
     border-radius: 18px;
     padding: 1.2rem;
     margin-bottom: 1rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
+}}
 
-[data-testid="stFileUploader"] {
+[data-testid="stFileUploader"] {{
     background-color: #FFFFFF;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 0.75rem;
-}
+}}
 
-.stButton > button {
+.stButton > button {{
     width: 100%;
     border-radius: 12px;
     height: 3.2rem;
@@ -85,12 +133,12 @@ st.markdown("""
     color: white;
     font-size: 1.05rem;
     box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
-}
+}}
 
-.stButton > button:hover {
+.stButton > button:hover {{
     background: linear-gradient(135deg, #1F2937 0%, #1D4ED8 100%);
     color: white;
-}
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -158,9 +206,12 @@ def build_scan_excel_from_text(barcode_text):
 
 st.markdown("""
 <div class="hero-card">
-    <h1>Store Execution Analytics</h1>
-    <p>POS Option Count platform for validating floor execution, identifying missing styles, and generating operational reports.</p>
-    <div class="creator-pill">Designed by Diego Díaz Iturbe · Data Analytics & Retail Operations</div>
+    <div class="brand-label">DDI Data Solutions</div>
+    <div class="barcode-icon">▌▌▌▌▌ ✓</div>
+    <h1>Floor Inventory Validation Platform</h1>
+    <p>POS Option Count automation for retail store execution. Validate scanned floor inventory, identify missing styles, and generate actionable operational reports.</p>
+    <div class="creator-pill">Created by Diego Díaz Iturbe · Retail Analytics • Automation • Operations</div>
+    <div class="version-line">v1.2.0 · Last updated June 2026</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -323,9 +374,6 @@ with tab_generate:
                     for warning in result["warnings"]:
                         st.write(f"- {warning}")
 
-                st.subheader("Executive Summary")
-                st.dataframe(result["summary"], use_container_width=True)
-
                 try:
                     summary_lookup = dict(zip(result["summary"]["Metric"], result["summary"]["Value"]))
                     metric_cols = st.columns(4)
@@ -335,6 +383,9 @@ with tab_generate:
                     metric_cols[3].metric("Completion", summary_lookup.get("Completion Rate", "—"))
                 except Exception:
                     pass
+
+                st.subheader("Executive Summary")
+                st.dataframe(result["summary"], use_container_width=True)
 
                 if "priority_missing" in result:
                     st.subheader("Priority Missing Products")
@@ -447,15 +498,15 @@ with tab_about:
     st.markdown("## About this project")
 
     st.markdown("""
-    **Store Execution Analytics** is a workflow automation project designed to reduce manual work in POS Option Count validation.
+    **Floor Inventory Validation Platform** is a workflow automation project created under **DDI Data Solutions**.
 
-    The tool compares:
+    It was designed to reduce manual work in retail floor execution audits by automating the comparison between:
 
     - Weekly POS Option Count files
     - Floor scan barcode lists
     - Product/barcode mapping data
 
-    and generates a structured report identifying:
+    The system generates a structured report identifying:
 
     - Products expected and found on the floor
     - Products expected but missing
@@ -466,9 +517,18 @@ with tab_about:
     st.markdown("---")
 
     st.markdown("""
-    ### Designed by Diego Díaz Iturbe
+    ### Project Story
 
-    **Data Analytics & Retail Operations**
+    **Business problem:**  
+    Store teams often need to manually compare POS Option Count files against floor scans to identify missing products and execution gaps.
 
-    This project is part of a broader retail analytics workflow focused on improving store execution, operational reporting, and decision-making through automation.
+    **Solution:**  
+    This platform automates barcode matching, floor validation, exception detection, and report generation.
+
+    **Operational value:**  
+    The workflow reduces manual reconciliation time, standardizes execution audits, and creates actionable reports for store teams.
+
+    ### Created by Diego Díaz Iturbe
+
+    **Retail Analytics • Automation • Operations**
     """)
