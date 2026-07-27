@@ -4,3 +4,5 @@ openpyxl
 xlsxwriter
 requests
 gdown
+weasyprint>=62,<67
+pydyf>=0.10,<0.12
