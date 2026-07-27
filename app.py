@@ -519,7 +519,13 @@ def get_metric_field(
 
 
 def embed_images_in_html(html_text: str) -> str:
-    chart_dir = Path("assets/charts")
+    """Embed generated chart images so HTML and PDF outputs are self-contained.
+
+    Resolve the chart folder relative to this application file instead of the
+    process working directory. Streamlit Cloud does not guarantee that the
+    working directory used while generating a report matches the app folder.
+    """
+    chart_dir = ASSETS_DIR / "charts"
     if not chart_dir.exists():
         return html_text
 
@@ -543,11 +549,20 @@ def export_pdf(html_text: str) -> tuple[bytes, str | None]:
         from weasyprint import HTML
 
         pdf_bytes = HTML(string=html_text, base_url=str(APP_DIR)).write_pdf()
-        if not pdf_bytes.startswith(b"%PDF"):
+        if not isinstance(pdf_bytes, bytes):
+            pdf_bytes = bytes(pdf_bytes)
+        if len(pdf_bytes) < 5 or not pdf_bytes.startswith(b"%PDF"):
             raise RuntimeError("The PDF renderer returned an invalid document.")
         return pdf_bytes, None
     except Exception as exc:
-        return b"", f"{type(exc).__name__}: {exc}"
+        diagnostic = (
+            f"{type(exc).__name__}: {exc}\n\n"
+            "The HTML and Excel outputs were generated successfully. "
+            "If this occurs on Streamlit Community Cloud, verify the "
+            "WeasyPrint Python and Linux package dependencies, then reboot "
+            "the deployment so they are installed during a fresh build."
+        )
+        return b"", diagnostic
 
 
 @st.cache_data(show_spinner=False)

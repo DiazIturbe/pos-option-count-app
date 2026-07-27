@@ -649,61 +649,916 @@ def build_html_report(
 <head>
     <meta charset="utf-8">
     <title>{store_name} KPI Report</title>
+
     <style>
-        @page {{ size: Letter; margin: 10mm; }}
+        :root {{
+            --ink: #172033;
+            --muted: #64748b;
+            --line: #dbe3ed;
+            --soft: #f5f7fa;
+            --panel: #ffffff;
+            --navy: #0f2747;
+            --blue: #2563eb;
+            --blue-soft: #eaf2ff;
+            --green: #16845b;
+            --green-soft: #eaf8f2;
+            --red: #c63f46;
+            --red-soft: #fff0f1;
+            --amber: #a96308;
+            --amber-soft: #fff6df;
+            --footwear: #386ea8;
+            --footwear-soft: #eef5fb;
+            --apparel: #c56e2f;
+            --apparel-soft: #fff3ea;
+            --accessories: #6f5aa8;
+            --accessories-soft: #f4f0fb;
+            --radius: 12px;
+        }}
+
+        * {{
+            box-sizing: border-box;
+        }}
+
+        html, body {{
+            margin: 0;
+            padding: 0;
+            background: #e8edf3;
+            color: var(--ink);
+            font-family: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            line-height: 1.38;
+        }}
+
+        body {{
+            padding: 22px 0;
+        }}
+
+        .page {{
+            width: 279.4mm;
+            min-height: 215.9mm;
+            margin: 0 auto 20px;
+            padding: 10mm;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 10px 28px rgba(15, 39, 71, 0.12);
+            overflow: hidden;
+            position: relative;
+        }}
+
+        .cover-page {{
+            padding: 0;
+            display: flex;
+            min-height: 215.9mm;
+            background:
+                linear-gradient(120deg, rgba(15,39,71,.98), rgba(28,70,116,.96)),
+                #0f2747;
+            color: #fff;
+        }}
+
+        .cover-accent {{
+            width: 13mm;
+            background: linear-gradient(180deg, #4f8bc9, #7bb3dc 48%, #f3a45e);
+        }}
+
+        .cover-content {{
+            flex: 1;
+            min-width: 0;
+            padding: 22mm 22mm 16mm 20mm;
+            display: flex;
+            flex-direction: column;
+        }}
+
+        .cover-eyebrow {{
+            text-transform: uppercase;
+            letter-spacing: .18em;
+            font-size: 9px;
+            font-weight: 700;
+            opacity: .78;
+            margin-bottom: 18mm;
+        }}
+
+        .cover-title {{
+            font-size: 32px;
+            line-height: 1.02;
+            font-weight: 800;
+            letter-spacing: -.04em;
+            max-width: 180mm;
+            margin: 0;
+        }}
+
+        .cover-store {{
+            font-size: 19px;
+            font-weight: 600;
+            color: #d8e9f8;
+            margin-top: 6mm;
+        }}
+
+        .cover-rule {{
+            width: 40mm;
+            height: 3px;
+            background: #f3a45e;
+            margin: 10mm 0 12mm;
+        }}
+
+        .cover-meta-grid {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8mm 14mm;
+            max-width: 130mm;
+        }}
+
+        .cover-meta-item span {{
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-size: 8px;
+            color: #a9c3dc;
+            margin-bottom: 2mm;
+        }}
+
+        .cover-meta-item strong {{
+            font-size: 12px;
+            color: #fff;
+            font-weight: 600;
+        }}
+
+        .cover-bottom {{
+            margin-top: auto;
+            padding-top: 14mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 12mm;
+        }}
+
+        .cover-description {{
+            max-width: 155mm;
+            color: #d5e3ef;
+            font-size: 10px;
+            line-height: 1.55;
+        }}
+
+        .cover-version {{
+            white-space: nowrap;
+            font-size: 9px;
+            color: #a9c3dc;
+        }}
+
+        .header {{
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10mm;
+            padding-bottom: 4mm;
+            margin-bottom: 5mm;
+            border-bottom: 1px solid var(--line);
+        }}
+
+        .title {{
+            font-size: 21px;
+            line-height: 1.05;
+            font-weight: 800;
+            letter-spacing: -.025em;
+            color: var(--navy);
+        }}
+
+        .subtitle {{
+            margin-top: 1.6mm;
+            color: var(--muted);
+            font-size: 10px;
+        }}
+
+        .header-meta {{
+            min-width: 58mm;
+            text-align: right;
+            color: var(--muted);
+            font-size: 9px;
+            line-height: 1.55;
+        }}
+
+        .header-meta strong {{
+            color: var(--ink);
+            font-weight: 700;
+        }}
+
+        .cards {{
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3mm;
+            margin-bottom: 3mm;
+        }}
+
+        .card {{
+            min-height: 29mm;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 3.5mm;
+            background: var(--panel);
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .card::before {{
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #94a3b8;
+        }}
+
+        .tone-positive::before {{ background: var(--green); }}
+        .tone-negative::before {{ background: var(--red); }}
+        .tone-neutral::before {{ background: #7890aa; }}
+
+        .card-main-row {{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 3mm;
+        }}
+
+        .card-value {{
+            font-size: 18px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: -.025em;
+            color: var(--navy);
+            white-space: nowrap;
+        }}
+
+        .card-identity {{
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 2mm;
+            color: var(--muted);
+            text-align: right;
+        }}
+
+        .icon-shell {{
+            width: 7mm;
+            height: 7mm;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--soft);
+            color: var(--navy);
+            flex: 0 0 auto;
+        }}
+
+        .kpi-icon {{
+            width: 4mm;
+            height: 4mm;
+        }}
+
+        .card-title {{
+            font-size: 8px;
+            line-height: 1.2;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .055em;
+        }}
+
+        .card-note {{
+            margin-top: 3mm;
+            font-size: 9px;
+            color: var(--muted);
+            min-height: 4mm;
+        }}
+
+        .kpi-note-positive {{ color: var(--green); }}
+        .kpi-note-negative {{ color: var(--red); }}
+        .trend-arrow {{ font-size: 8px; }}
+
+        .card-utility {{
+            margin-top: 2mm;
+        }}
+
+        .kpi-empty-space {{ height: 7px; }}
+
+        .kpi-progress-meta {{
+            display: flex;
+            justify-content: space-between;
+            gap: 2mm;
+            color: var(--muted);
+            font-size: 7.5px;
+            margin-bottom: 1mm;
+        }}
+
+        .kpi-progress-value {{ font-weight: 700; color: var(--ink); }}
+
+        .kpi-progress {{
+            height: 3px;
+            background: #e6ebf1;
+            border-radius: 99px;
+            overflow: hidden;
+        }}
+
+        .kpi-progress-fill {{
+            height: 100%;
+            border-radius: 99px;
+            background: #7890aa;
+        }}
+
+        .kpi-progress-fill.positive {{ background: var(--green); }}
+        .kpi-progress-fill.negative {{ background: var(--red); }}
+
+        .chart-row {{
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4mm;
+            margin-top: 4mm;
+        }}
+
+        .single-chart-row {{
+            grid-template-columns: minmax(0, 1fr);
+        }}
+
+        .single-chart-row .chart-card {{
+            max-width: 50%;
+        }}
+
+        .chart-card {{
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 3.5mm;
+            min-width: 0;
+        }}
+
+        .chart-card h3 {{
+            margin: 0 0 2mm;
+            font-size: 10px;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }}
+
+        .chart-card img {{
+            display: block;
+            width: 100%;
+            max-height: 58mm;
+            object-fit: contain;
+        }}
+
+        .compact-chart img {{ max-height: 50mm; }}
+        .top-brands-chart img {{ max-height: 58mm; }}
+
+        .section {{
+            margin-top: 4mm;
+        }}
+
+        .section-title {{
+            display: flex;
+            align-items: center;
+            min-height: 7mm;
+            margin-bottom: 2.5mm;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -.01em;
+        }}
+
+        .section-title::before {{
+            content: "";
+            width: 3px;
+            height: 5mm;
+            margin-right: 2.2mm;
+            border-radius: 2px;
+            background: #4f8bc9;
+        }}
+
+        .subsection-label {{
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            font-size: 8px;
+            font-weight: 700;
+            margin: 0 0 1.5mm;
+        }}
+
+        .summary {{
+            border: 1px solid #d7e3ef;
+            border-left: 4px solid #4f8bc9;
+            background: #f7fbff;
+            border-radius: 8px;
+            padding: 3mm 4mm;
+            color: #334155;
+            line-height: 1.55;
+        }}
+
+        .summary-chip {{
+            display: inline-block;
+            border-radius: 4px;
+            padding: 0 .8mm;
+            font-weight: 700;
+        }}
+
+        .money-chip {{ background: #e8eff8; color: var(--navy); }}
+        .positive-chip {{ background: var(--green-soft); color: var(--green); }}
+        .negative-chip {{ background: var(--red-soft); color: var(--red); }}
+        .mix-chip {{ background: var(--amber-soft); color: var(--amber); }}
+
+        .table-grid {{
+            display: grid;
+            grid-template-columns: 1.42fr .9fr;
+            gap: 4mm;
+            align-items: start;
+        }}
+
+        .data-table, .mini-table {{
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+        }}
+
+        .data-table th, .mini-table th {{
+            padding: 2mm 1.5mm;
+            background: #eef2f6;
+            border-bottom: 1px solid var(--line);
+            color: #475569;
+            text-align: right;
+            font-size: 7.5px;
+            line-height: 1.25;
+            text-transform: uppercase;
+            letter-spacing: .035em;
+            white-space: nowrap;
+        }}
+
+        .data-table td, .mini-table td {{
+            padding: 1.8mm 1.5mm;
+            border-bottom: 1px solid #edf1f5;
+            color: #334155;
+            text-align: right;
+            vertical-align: middle;
+            font-size: 8.5px;
+        }}
+
+        .data-table tr:last-child td, .mini-table tr:last-child td {{
+            border-bottom: 0;
+        }}
+
+        .data-table tbody tr:nth-child(even) td {{
+            background: #fafbfd;
+        }}
+
+        .data-table th:first-child,
+        .data-table td:first-child,
+        .mini-table th:first-child,
+        .mini-table td:first-child,
+        .text-left {{
+            text-align: left;
+        }}
+
+        .brand-performance-table td:first-child {{
+            font-weight: 600;
+        }}
+
+        .department-pill, .gap-group-label {{
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5mm;
+            font-weight: 700;
+            white-space: nowrap;
+        }}
+
+        .section-icon, .table-dept-icon, .gap-group-icon,
+        .subsection-icon, .chart-heading-icon,
+        .seller-title-icon, .seller-heading-icon,
+        .subsection-heading-icon {{
+            width: 4mm;
+            height: 4mm;
+            flex: 0 0 auto;
+        }}
+
+        .footwear {{ color: var(--footwear); }}
+        .apparel {{ color: var(--apparel); }}
+        .accessories {{ color: var(--accessories); }}
+
+        .footwear-row td:first-child {{ border-left: 3px solid var(--footwear); }}
+        .apparel-row td:first-child {{ border-left: 3px solid var(--apparel); }}
+        .accessories-row td:first-child {{ border-left: 3px solid var(--accessories); }}
+
+        .positive {{ color: var(--green) !important; font-weight: 700; }}
+        .negative {{ color: var(--red) !important; font-weight: 700; }}
+        .neutral-text {{ color: var(--muted) !important; }}
+
+        .spark-cell {{
+            display: grid;
+            grid-template-columns: minmax(16mm, 1fr) auto;
+            align-items: center;
+            gap: 1.5mm;
+            min-width: 29mm;
+        }}
+
+        .spark-track {{
+            height: 3px;
+            border-radius: 99px;
+            background: #e8edf2;
+            overflow: hidden;
+        }}
+
+        .spark-fill {{ height: 100%; border-radius: 99px; }}
+        .spark-positive {{ background: var(--green); }}
+        .spark-negative {{ background: var(--red); }}
+        .spark-footwear {{ background: var(--footwear); }}
+        .spark-apparel {{ background: var(--apparel); }}
+        .spark-accessories {{ background: var(--accessories); }}
+        .spark-contribution {{ background: #738aa2; }}
+
+        .spark-value {{
+            white-space: nowrap;
+            font-size: 8px;
+        }}
+
+        .store-insights-grid {{
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 4mm;
+            align-items: start;
+        }}
+
+        .store-insight-panel {{
+            min-width: 0;
+        }}
+
+        .note-box {{
+            border-radius: 7px;
+            border: 1px solid #dce5ee;
+            background: var(--soft);
+            padding: 2.4mm 3mm;
+            color: var(--muted);
+            font-size: 8.5px;
+            line-height: 1.45;
+            margin-bottom: 2.5mm;
+        }}
+
+        .compact-note {{
+            padding: 1.8mm 2.5mm;
+        }}
+
+        .seller-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 3mm;
+        }}
+
+        .seller-block, .department-card, .brand-column {{
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: #fff;
+            overflow: hidden;
+        }}
+
+        .seller-block-title, .seller-department-heading,
+        .embedded-sellers-title, .brand-column-title,
+        .department-subsection-heading {{
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+            font-weight: 800;
+            color: var(--navy);
+        }}
+
+        .seller-block-title {{
+            padding: 2.4mm 3mm;
+            border-bottom: 1px solid var(--line);
+            background: #f6f8fb;
+        }}
+
+        .seller-department-section {{
+            margin-bottom: 4mm;
+        }}
+
+        .seller-department-heading {{
+            margin-bottom: 2mm;
+            font-size: 11px;
+        }}
+
+        .product-table td {{
+            padding-top: 1.5mm;
+            padding-bottom: 1.5mm;
+        }}
+
+        .rank-cell {{
+            width: 8mm;
+            color: var(--muted);
+            font-weight: 700;
+        }}
+
+        .product-cell {{
+            text-align: left !important;
+            min-width: 38mm;
+        }}
+
+        .product-cell strong,
+        .product-cell span {{
+            display: block;
+        }}
+
+        .product-cell strong {{
+            font-size: 8.2px;
+            color: var(--ink);
+        }}
+
+        .product-cell span {{
+            margin-top: .5mm;
+            color: var(--muted);
+            font-size: 7px;
+        }}
+
+        .stock-low {{
+            color: var(--red) !important;
+            font-weight: 800;
+            background: var(--red-soft) !important;
+        }}
+
+        .department-grid {{
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4mm;
+        }}
+
+        .department-card {{
+            padding: 0;
+        }}
+
+        .department-header {{
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+            padding: 2.5mm 3.5mm;
+            color: #fff;
+            font-weight: 800;
+            font-size: 11px;
+        }}
+
+        .department-header.footwear {{ background: var(--footwear); }}
+        .department-header.apparel {{ background: var(--apparel); }}
+        .department-header.accessories {{ background: var(--accessories); }}
+        .department-header.neutral {{ background: #64748b; }}
+
+        .metric-row {{
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2mm;
+            padding: 3mm;
+            border-bottom: 1px solid var(--line);
+        }}
+
+        .small-metric {{
+            padding: 2mm;
+            border-radius: 7px;
+            background: var(--soft);
+            min-width: 0;
+        }}
+
+        .small-metric-label {{
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .035em;
+            font-size: 6.8px;
+            line-height: 1.15;
+            min-height: 7mm;
+        }}
+
+        .small-metric-value {{
+            margin-top: 1mm;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--navy);
+            white-space: nowrap;
+        }}
+
+        .department-subsection-heading {{
+            padding: 3mm 3mm 1.5mm;
+        }}
+
+        .department-subsection-title {{
+            font-size: 10px;
+        }}
+
+        .department-subsection-note {{
+            color: var(--muted);
+            font-size: 7.5px;
+            font-weight: 400;
+        }}
+
+        .brand-grid {{
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 2.5mm;
+            padding: 2mm 3mm 3mm;
+        }}
+
+        .brand-column-title {{
+            padding: 2mm 2.5mm;
+            background: #f6f8fb;
+            border-bottom: 1px solid var(--line);
+            font-size: 8.5px;
+        }}
+
+        .brand-column .mini-table {{
+            border: 0;
+            border-radius: 0;
+        }}
+
+        .brand-column .mini-table th,
+        .brand-column .mini-table td {{
+            padding: 1.35mm 1.5mm;
+            font-size: 7.5px;
+        }}
+
+        .footwear-column {{ border-top: 3px solid var(--footwear); }}
+        .apparel-column {{ border-top: 3px solid var(--apparel); }}
+        .accessories-column {{ border-top: 3px solid var(--accessories); }}
+
+        .embedded-sellers {{
+            margin: 0 3mm 3mm;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            overflow: hidden;
+        }}
+
+        .embedded-sellers-title {{
+            padding: 2mm 2.5mm;
+            background: #f6f8fb;
+            border-bottom: 1px solid var(--line);
+        }}
+
+        .embedded-sellers .data-table {{
+            border: 0;
+            border-radius: 0;
+        }}
+
+        .empty-note {{
+            padding: 4mm;
+            color: var(--muted);
+            text-align: center;
+            font-style: italic;
+            background: var(--soft);
+            border-radius: 7px;
+        }}
+
+        .footer {{
+            margin-top: 4mm;
+            padding-top: 2mm;
+            border-top: 1px solid var(--line);
+            color: #8795a5;
+            text-align: center;
+            font-size: 7.5px;
+        }}
+
         @page {{
             size: Letter landscape;
-            margin: 8mm 8mm 9mm 8mm;
+            margin: 8mm 8mm 10mm 8mm;
+
+            @bottom-left {{
+                content: "Store Performance Reporting Platform";
+                color: #7b8796;
+                font-size: 7px;
+            }}
+
             @bottom-right {{
                 content: "Page " counter(page) " of " counter(pages);
-                color: #64748B;
-                font-size: 8px;
+                color: #7b8796;
+                font-size: 7px;
             }}
         }}
+
         @media print {{
-            * {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+            * {{
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }}
+
             html, body {{
-                background: #FFFFFF !important;
+                background: #fff !important;
                 width: auto !important;
                 margin: 0 !important;
                 padding: 0 !important;
             }}
-            .print-button {{ display:none !important; }}
+
             .page {{
                 width: auto !important;
                 min-height: auto !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                box-shadow: none !important;
                 border-radius: 0 !important;
+                box-shadow: none !important;
+                overflow: visible !important;
                 break-after: page;
                 page-break-after: always;
             }}
-            .page:last-child {{ break-after: auto; page-break-after: auto; }}
-            .page-break {{ break-before: page; page-break-before: always; }}
-            .header {{ margin-top: 0 !important; }}
-            .card, .chart-card, .department-card, .seller-block,
-            .brand-column, .section, .store-insight-panel, table, tr, img {{
+
+            .cover-page {{
+                min-height: 195mm !important;
+                display: flex !important;
+            }}
+
+            .page:last-child {{
+                break-after: auto;
+                page-break-after: auto;
+            }}
+
+            .page-break {{
+                break-before: page;
+                page-break-before: always;
+            }}
+
+            .card, .chart-card, .section, .department-card,
+            .brand-column, .seller-block, .store-insight-panel,
+            .note-box, table, tr, img {{
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
                 box-shadow: none !important;
             }}
-            img {{ max-width: 100% !important; height: auto !important; }}
-            .chart-row {{ align-items: stretch !important; gap: 9px !important; }}
-            .compact-chart img, .top-brands-chart img {{
-                max-height: 185px !important;
-                object-fit: contain !important;
-            }}
-            .store-insights-grid {{ grid-template-columns: 1.22fr 1fr !important; gap: 9px !important; }}
-            .department-grid {{ gap: 9px !important; }}
-            .section {{ margin-top: 9px !important; }}
-            .footer {{ margin-top: 7px !important; }}
-        }}
 
+            thead {{
+                display: table-header-group;
+            }}
+
+            tfoot {{
+                display: table-footer-group;
+            }}
+
+            img {{
+                max-width: 100% !important;
+                height: auto !important;
+            }}
+
+            .chart-card img {{
+                max-height: 48mm !important;
+            }}
+
+            .top-brands-chart img {{
+                max-height: 53mm !important;
+            }}
+
+            .header {{
+                margin-top: 0 !important;
+            }}
+
+            .section {{
+                margin-top: 3mm !important;
+            }}
+
+            .footer {{
+                margin-top: 3mm !important;
+            }}
+        }}
     </style>
+
 </head>
 <body>
-    <div class="page">
+
+    <div class="page cover-page">
+        <div class="cover-accent"></div>
+        <div class="cover-content">
+            <div class="cover-eyebrow">Store Performance Reporting Platform</div>
+            <h1 class="cover-title">{report_title}</h1>
+            <div class="cover-store">{store_name}</div>
+            <div class="cover-rule"></div>
+
+            <div class="cover-meta-grid">
+                <div class="cover-meta-item">
+                    <span>Reporting period</span>
+                    <strong>{report_period}</strong>
+                </div>
+                <div class="cover-meta-item">
+                    <span>Generated</span>
+                    <strong>{generated_date}</strong>
+                </div>
+                <div class="cover-meta-item">
+                    <span>Report scope</span>
+                    <strong>Sales, budget, brands and inventory</strong>
+                </div>
+                <div class="cover-meta-item">
+                    <span>Source</span>
+                    <strong>Standardized Tableau exports</strong>
+                </div>
+            </div>
+
+            <div class="cover-bottom">
+                <div class="cover-description">
+                    Automated weekly operational report consolidating store KPIs,
+                    department performance, sales contribution, top brands,
+                    top-selling products, budget opportunities and validation checks.
+                </div>
+                <div class="cover-version">Report version 1.0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page page-break">
         <div class="header">
             <div><div class="title">{store_name} KPI Report</div><div class="subtitle">{report_title}</div></div>
             <div class="header-actions">
@@ -727,7 +1582,7 @@ def build_html_report(
 
         <div class="chart-row">
             <div class="chart-card compact-chart"><h3>Global Sales Contribution</h3><img src="../assets/charts/sales_mix.png" alt="Global Sales Contribution"></div>
-            <div class="chart-card compact-chart"><h3>Budget GAP by Department</h3><img src="../assets/charts/budget_gap.png" alt="Budget GAP by Department"></div>
+            <div class="chart-card compact-chart"><h3>Budget Gap by Department</h3><img src="../assets/charts/budget_gap.png" alt="Budget Gap by Department"></div>
         </div>
 
         <div class="section"><div class="section-title">Executive Summary</div><div class="summary">{summary}</div></div>
