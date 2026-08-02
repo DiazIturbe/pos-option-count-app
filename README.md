@@ -1,210 +1,254 @@
-# POS Option Count Automation
+# Floor Inventory Validation Platform
 
-### Retail Inventory Verification & Floor Validation
+### Operational Decision-Support for Retail Inventory Execution
 
-> Transforming retail floor scans into accurate inventory validation and operational insights.
+Transforming raw inventory scans into prioritized operational actions.
 
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-Live-FF4B4B?logo=streamlit&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Active-success)
-![License](https://img.shields.io/badge/License-MIT-blue)
-
-The **POS Option Count Automation** platform streamlines retail inventory verification by automatically comparing floor scan data against POS option count reports. Through barcode reconciliation, automated validation, and standardized reporting, the platform significantly reduces manual effort while improving inventory accuracy and operational visibility.
+![Hero Image](assets/readme/hero_image.jpg)
 
 ---
 
-![Hero Banner](assets/readme/hero_banner.png)
+![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red?logo=streamlit)
+![Pandas](https://img.shields.io/badge/Pandas-Data%20Processing-150458?logo=pandas)
+![Status](https://img.shields.io/badge/Status-Production-success)
 
 ---
 
-## Quick Links
+## Live Application
 
-**Live Application**
+**Streamlit Demo**
 
-*(Coming Soon)*
+https://pos-option-count.streamlit.app/
 
-**Portfolio Case Study**
-
-*(Coming Soon)*
+*(Replace with your production URL if different.)*
 
 ---
 
-# Executive Summary
+## Executive Summary
 
-The POS Option Count Automation platform replaces a repetitive manual inventory validation process with an automated workflow.
+The **Floor Inventory Validation Platform** is an operational decision-support application that helps retail teams verify floor execution against expected inventory.
 
-Instead of manually comparing hundreds of scanned products against POS reports, users simply upload the required files while the application validates, reconciles, analyzes, and generates standardized operational reports.
+Instead of manually comparing inventory reports against floor scans, the platform automatically identifies discrepancies, prioritizes corrective actions, and generates operational reports that allow store teams to resolve issues faster.
 
-The result is a faster, more reliable, and consistent inventory verification process that supports merchandising, replenishment, and daily retail operations.
-
----
-
-# The Challenge
-
-Maintaining an accurate sales floor is essential for inventory accuracy, replenishment planning, and customer experience.
-
-Traditionally, validating floor inventory required manually comparing POS option count reports against barcode scan results—a repetitive process that could take several hours every reporting cycle while remaining susceptible to human error.
-
-As store size and product assortment increased, maintaining an efficient validation process became increasingly difficult.
+Designed for daily retail operations, the application transforms raw inventory data into clear, actionable recommendations.
 
 ---
 
-# The Solution
+## The Challenge
 
-The platform transforms a manual inventory reconciliation process into a guided automation workflow that validates uploaded files, compares scanned products against expected inventory, identifies discrepancies, prioritizes corrective actions, and generates standardized operational reports.
+Large retail stores carry hundreds of footwear and apparel styles distributed across multiple departments.
+
+Verifying that every expected product is correctly displayed on the sales floor traditionally requires manually comparing inventory reports against physical inspections.
+
+This process is repetitive, time-consuming, and makes it difficult to quickly identify:
+
+- Missing products
+- Unexpected inventory
+- Assortment execution issues
+- Replenishment opportunities
 
 ---
 
-# Workflow
+## The Solution
 
-```mermaid
-flowchart TD
-    A[POS Option Count Report] --> D[Automatic File Validation]
-    B[Floor Scan] --> D
-    C[Barcode Mapping] --> D
-    D --> E[Inventory Reconciliation]
-    E --> F[Discrepancy Detection]
-    F --> G[Operational Analytics]
-    G --> H[Interactive Report]
-    H --> I[Operational Decision Support]
+The platform automates the inventory validation workflow by:
+
+- Importing weekly POS inventory expectations
+- Processing barcode scans collected on the sales floor
+- Matching products against the merchandise database
+- Detecting missing and unexpected inventory
+- Prioritizing products requiring immediate action
+- Producing operational reports for store execution
+
+Instead of reviewing hundreds of inventory records manually, managers receive a prioritized action list within minutes.
+
+---
+
+# Application Workflow
+
+```text
+                 POS Inventory
+                       │
+                       ▼
+              Floor Barcode Scan
+                       │
+                       ▼
+          Inventory Validation Engine
+                       │
+                       ▼
+             Product Classification
+                       │
+          ┌────────────┴────────────┐
+          ▼                         ▼
+ Missing Products          Unexpected Products
+          │
+          ▼
+      Priority Ranking
+          │
+          ▼
+   Operational Action Report
+          │
+          ▼
+      Store Action Plan
 ```
 
-From raw inventory data to operational decision support, every stage of the validation process is automated to improve consistency, reduce manual effort, and accelerate decision-making.
+---
+
+# Guided Workflow
+
+The application provides a structured workflow that guides users from data upload through automated validation and report generation.
+
+Minimal user interaction is required, allowing operational staff to generate reports consistently without technical knowledge.
+
+![Application Overview](assets/readme/Overview_Inventory_App.png)
 
 ---
 
-# Application Overview
+# Inventory Processing
 
-The application provides an intuitive workflow that guides users through inventory uploads, validation, barcode reconciliation, and report generation from a single interface.
+Weekly inventory expectations and floor scans are uploaded through a guided interface.
 
-![Application Overview](assets/readme/application_overview.png)
+The platform validates every uploaded file before processing begins, reducing preparation errors and ensuring consistent data quality.
 
----
-
-# Guided Upload Workflow
-
-Users upload the POS Option Count report and Floor Scan file while the platform automatically validates each input before processing. A default barcode mapping is included, with the flexibility to upload a custom mapping when required.
-
-![Guided Upload](assets/readme/guided_upload.png)
+![Upload Workflow](assets/readme/Upload_Inventory_App.png)
 
 ---
 
-# Executive Summary & Priority Actions
+# Operational Dashboard
 
-Once processing is complete, the platform immediately presents key inventory metrics together with prioritized missing products, allowing store teams to focus on the highest-impact corrective actions.
+After processing, managers receive an executive dashboard summarizing inventory execution.
 
-![Executive Summary](assets/readme/executive_summary.png)
+The dashboard immediately highlights overall completion, missing products, unexpected items, and key operational indicators.
+
+![Executive Dashboard](assets/readme/Executive_Summary_Inventory_App.png)
+
+---
+
+# Priority Actions
+
+Rather than presenting raw inventory data, the platform ranks missing products according to business impact.
+
+Products that are expected on the sales floor but remain in stock are automatically prioritized, allowing teams to focus first on the actions that will have the greatest operational value.
+
+![Priority Missing Products](assets/readme/Missing_Products_Inventory_App.png)
 
 ---
 
 # Operational Insights
 
-The platform summarizes inventory discrepancies by department and brand, helping managers quickly identify operational patterns, replenishment priorities, and merchandising opportunities.
+Inventory discrepancies are summarized by department and by brand, allowing managers to identify recurring execution issues and prioritize merchandising efforts.
 
-![Operational Insights](assets/readme/operational_insights.png)
+These summaries provide an immediate understanding of where operational attention is required.
+
+![Inventory Analysis](assets/readme/Missing_Brand_Inventory_App.png)
 
 ---
 
-# Actionable Operational Report
+# Operational Action Report
 
-In addition to the interactive dashboard, the platform exports a fully formatted Excel report that categorizes every scanned product, highlights missing inventory, flags unexpected items, and recommends operational actions for each discrepancy.
+Every inventory validation produces a structured operational report.
 
-![Excel Report](assets/readme/excel_report.png)
+Each product is classified according to its execution status and assigned a recommended action, allowing store teams to begin replenishment, validation, or assortment correction immediately.
+
+![Operational Report](assets/readme/Operational_Report.png)
 
 ---
 
 # Business Impact
 
-The POS Option Count Automation platform replaces a repetitive manual inventory validation workflow with a standardized inventory reconciliation process.
+The platform transforms raw inventory scans into actionable operational intelligence.
 
 ### Benefits
 
-- Reduced report preparation time from approximately **5 hours to 30 minutes**
-- Standardized inventory validation
-- Reduced manual reconciliation
-- Improved reporting consistency
-- Faster identification of inventory discrepancies
-- Prioritized operational recommendations
-- Better merchandising decision support
+- Faster inventory validation
+- Reduced manual comparison
+- Standardized reporting
+- Prioritized corrective actions
+- Improved merchandising execution
+- Better inventory visibility
+- Consistent decision support
 
 ---
 
-# Key Capabilities
+## Key Capabilities
 
-- Automatic file identification
 - Guided upload workflow
 - Barcode reconciliation
-- Inventory validation
-- Missing item detection
-- Unexpected item detection
-- Priority product identification
-- Department and brand analysis
-- Interactive operational dashboard
-- Excel report generation
+- POS validation
+- Product classification
+- Missing inventory detection
+- Unexpected inventory detection
+- Priority ranking
+- Department analysis
+- Brand analysis
+- Executive dashboard
+- Operational report generation
 
 ---
 
-# Technology Stack
+## Technology Stack
 
-| Layer | Technologies |
-|--------|--------------|
-| **Backend** | Python |
-| **User Interface** | Streamlit |
-| **Data Processing** | Pandas |
-| **Reporting** | OpenPyXL · XlsxWriter |
-| **Validation Engine** | Barcode Mapping · Inventory Reconciliation |
+| Category | Technologies |
+|----------|--------------|
+| Programming | Python |
+| Framework | Streamlit |
+| Data Processing | Pandas |
+| Reporting | HTML, Excel |
+| Data Analysis | NumPy |
+| Excel Automation | OpenPyXL |
 
 ---
 
-# Repository Structure
+## Repository Structure
 
 ```text
-📁 app.py
-   Main Streamlit application
+app.py
+Main Streamlit application
 
-📁 report_generator.py
-   Inventory validation engine
+report_generator.py
+Inventory processing engine
 
-📁 assets/
-   Images and application resources
+assets/
+README images
 
-📁 requirements.txt
-   Project dependencies
+requirements.txt
+Project dependencies
 ```
 
 ---
 
-# Roadmap
+## Future Roadmap
 
-## Next Release
+### Next Release
 
-- Enhanced dashboard visualizations
-- Improved validation summaries
-- Additional operational KPIs
-- Performance optimization
+- PDF report generation
+- Interactive visualizations
+- Historical inventory trends
+- Performance improvements
 
-## Future Vision
+### Future Vision
 
-- Multi-store reporting
-- Historical inventory comparisons
+- Multi-store support
+- Regional dashboards
+- Power BI integration
 - Cloud deployment
-- Scheduled inventory audits
-- Integration with inventory management systems
+- Predictive inventory analytics
+- Mobile-friendly reports
 
 ---
 
-# About the Author
+## About the Author
 
 **Diego Díaz Iturbe**
 
-**Data Analytics • Automation • Cloud • GIS**
+Data Analytics • Automation • Cloud • GIS
 
-Building practical decision-support systems through analytics, automation, and visualization.
+I enjoy solving operational problems by combining data analytics, automation, and visualization into practical decision-support systems.
 
-**Portfolio**
+- Portfolio: https://impactomex.wixsite.com/eportfolio
+- LinkedIn: https://linkedin.com/in/diaziturbe
 
-https://impactomex.wixsite.com/eportfolio
+---
 
-**LinkedIn**
-
-https://www.linkedin.com/in/diaziturbe/
+*If you found this project interesting, feel free to star the repository or connect with me on LinkedIn.*
