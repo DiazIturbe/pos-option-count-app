@@ -18,20 +18,8 @@ Transforming raw inventory scans into prioritized operational actions.
 
 ## Live Application
 
-**Streamlit Demo**
-
 https://pos-option-count-app-yryunnktg2cxgfm3bh6ysf.streamlit.app/
 
-## At a Glance
-
-| Metric | Value |
-|--------|------:|
-| Development Status | Production |
-| Validation Time | **5 hrs → ~30 min** |
-| Time Reduction | **≈90%** |
-| Input Sources | POS Report + Floor Scan |
-| Outputs | Operational Report + Excel |
-| Built With | Python • Streamlit • Pandas |
 
 ---
 
@@ -42,6 +30,16 @@ The **Floor Inventory Validation Platform** is an operational decision-support a
 Instead of manually comparing inventory reports against floor scans, the platform automatically identifies discrepancies, prioritizes corrective actions, and generates operational reports that allow store teams to resolve issues faster.
 
 Designed for daily retail operations, the application transforms raw inventory data into clear, actionable recommendations.
+
+---
+
+## Project Snapshot
+
+- **Status:** Production
+- **Workflow Time:** 5 hours → ~30 minutes
+- **Time Reduction:** ~90%
+- **Inputs:** POS Report, Floor Scan
+- **Outputs:** Operational Report, Excel
 
 ---
 
