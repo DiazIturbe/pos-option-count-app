@@ -19,9 +19,18 @@ Transforming raw inventory scans into prioritized operational actions.
 
 **Streamlit Demo**
 
-https://pos-option-count.streamlit.app/
+https://pos-option-count-app-yryunnktg2cxgfm3bh6ysf.streamlit.app/
 
-*(Replace with your production URL if different.)*
+## At a Glance
+
+| Metric | Value |
+|--------|------:|
+| Development Status | Production |
+| Validation Time | **5 hrs → ~30 min** |
+| Time Reduction | **≈90%** |
+| Input Sources | POS Report + Floor Scan |
+| Outputs | Operational Report + Excel |
+| Built With | Python • Streamlit • Pandas |
 
 ---
 
@@ -62,6 +71,25 @@ The platform automates the inventory validation workflow by:
 - Producing operational reports for store execution
 
 Instead of reviewing hundreds of inventory records manually, managers receive a prioritized action list within minutes.
+
+---
+
+## Results
+
+The implementation standardized the inventory validation process and significantly reduced the time required to identify merchandising discrepancies.
+
+## Business Impact
+
+The platform transformed a manual inventory validation process into a standardized decision-support workflow for retail operations.
+
+Key outcomes include:
+
+- Reduced inventory validation time from approximately **5 hours to around 30 minutes** (≈90% reduction)
+- Standardized the floor verification process
+- Eliminated repetitive manual comparison between reports and floor scans
+- Automatically prioritized products requiring immediate attention
+- Improved visibility into inventory execution by department and brand
+- Generated consistent operational reports for store management
 
 ---
 
