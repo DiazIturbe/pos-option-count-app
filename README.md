@@ -4,7 +4,8 @@
 
 Transforming raw inventory scans into prioritized operational actions.
 
-![Hero Image](assets/readme/hero_image.jpg)
+![Hero Image](assets/readme/floor-inventory-verification-platform-hero-v4.png)
+
 
 ---
 
