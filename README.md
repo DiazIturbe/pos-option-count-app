@@ -4,7 +4,7 @@
 
 Transforming raw inventory scans into prioritized operational actions.
 
-![Hero Image](assets/readme/floor-inventory-verification-platform-hero-v4.png)
+![Hero Image](assets/readme/hero_image.jpg)
 
 
 ---
@@ -72,6 +72,8 @@ The platform automates the inventory validation workflow by:
 - Producing operational reports for store execution
 
 Instead of reviewing hundreds of inventory records manually, managers receive a prioritized action list within minutes.
+
+![Hero Image](assets/readme/architecture_illustration.png)
 
 ---
 
